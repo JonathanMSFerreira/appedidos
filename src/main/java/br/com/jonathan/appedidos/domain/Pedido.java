@@ -2,100 +2,106 @@ package br.com.jonathan.appedidos.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
-public class Produto implements Serializable{
-
+public class Pedido implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+
+	
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm")
+	private Date instante;
+
+	
+	@OneToOne(cascade=CascadeType.ALL, mappedBy="pedido")
+	private Pagamento pagamento;
+
+
+	@ManyToOne
+	@JoinColumn(name="id_cliente")
+	private Cliente cliente;
 	
 	
-	private String nome;
+	@ManyToOne
+	@JoinColumn(name="id_endereco")
+	private Endereco enderecoDeEntrega;
 	
-	
-	private Double preco;
-	
-	
-	@JsonIgnore
-	@ManyToMany
-	@JoinTable(name="rel_produto_categoria", joinColumns = @JoinColumn(name = "id_produto"),
-	inverseJoinColumns = @JoinColumn(name="id_categoria"))
-	private List<Categoria> categorias = new ArrayList<>();
-	
-	
-	@JsonIgnore
-	@OneToMany(mappedBy="id.produto")
+	@OneToMany(mappedBy="id.pedido")
 	private Set<ItemPedido> itens = new HashSet<>();
-	
 	
 	public Integer getId() {
 		return id;
 	}
+
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public String getNome() {
-		return nome;
+
+	public Date getInstante() {
+		return instante;
 	}
-	public void setNome(String nome) {
-		this.nome = nome;
+
+	public void setInstante(Date instante) {
+		this.instante = instante;
 	}
-	
-	@JsonIgnore
-	public List<Pedido> getPedidos(){
-		
-		List<Pedido> lista = new ArrayList<>();
-		for(ItemPedido x : itens) {
-			
-			lista.add(x.getPedido());
-		}
-		
-		return lista;
-		
-		
-	}
-	
-	public Double getPreco() {
-		return preco;
-	}
-	public void setPreco(Double preco) {
-		this.preco = preco;
-	}
-	
+
 	
 	
 	public Set<ItemPedido> getItens() {
 		return itens;
 	}
+
 	public void setItens(Set<ItemPedido> itens) {
 		this.itens = itens;
 	}
-	public List<Categoria> getCategorias() {
-		return categorias;
+
+	public Endereco getEnderecoDeEntrega() {
+		return enderecoDeEntrega;
 	}
-	public void setCategorias(List<Categoria> categorias) {
-		this.categorias = categorias;
+
+	public void setEnderecoDeEntrega(Endereco enderecoDeEntrega) {
+		this.enderecoDeEntrega = enderecoDeEntrega;
 	}
+
+	public Cliente getCliente() {
+		return cliente;
+	}
+
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
+	}
+
+	public Pagamento getPagamento() {
+		return pagamento;
+	}
+
+	public void setPagamento(Pagamento pagamento) {
+		this.pagamento = pagamento;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -103,6 +109,7 @@ public class Produto implements Serializable{
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -111,7 +118,7 @@ public class Produto implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Produto other = (Produto) obj;
+		Pedido other = (Pedido) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -119,14 +126,5 @@ public class Produto implements Serializable{
 			return false;
 		return true;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }

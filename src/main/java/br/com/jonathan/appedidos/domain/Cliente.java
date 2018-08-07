@@ -16,6 +16,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import br.com.jonathan.appedidos.domain.enums.TipoCliente;
@@ -43,8 +45,14 @@ public class Cliente implements Serializable{
 	private Integer tipo;
 
 	
+	
 	@OneToMany(mappedBy="cliente")
 	private List<Endereco> enderecos = new ArrayList<>();
+	
+	
+	@JsonIgnore
+	@OneToMany(mappedBy="cliente")
+	private List<Pedido> pedidos = new ArrayList<>();
 	
 	
 	@ElementCollection
@@ -65,6 +73,15 @@ public class Cliente implements Serializable{
 	}
 	
 
+	public List<Pedido> getPedidos() {
+		return pedidos;
+	}
+	public void setPedidos(List<Pedido> pedidos) {
+		this.pedidos = pedidos;
+	}
+	public void setTipo(Integer tipo) {
+		this.tipo = tipo;
+	}
 	public String getEmail() {
 		return email;
 	}
